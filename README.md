@@ -28,6 +28,7 @@ Este é o serviço de autenticação do projeto ToggleMaster. Ele é responsáve
     PORT="8001"
     
     # Chave mestra para criar novas chaves de API
+    
     MASTER_KEY="admin-secreto-123"
     ```
 
