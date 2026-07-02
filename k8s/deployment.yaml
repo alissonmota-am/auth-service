@@ -20,6 +20,13 @@ spec:
           image: 634115191566.dkr.ecr.us-east-1.amazonaws.com/auth-service:latest
           ports:
             - containerPort: 8001
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
           env:
             - name: PORT
               value: "8001"
