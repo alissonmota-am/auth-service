@@ -3,13 +3,8 @@ kind: Ingress
 metadata:
   name: auth-service-ingress
   namespace: auth-service
-  annotations:
-    kubernetes.io/ingress.class: alb
-    alb.ingress.kubernetes.io/scheme: internet-facing
-    alb.ingress.kubernetes.io/target-type: ip
-    alb.ingress.kubernetes.io/group.name: toggle-master
-    alb.ingress.kubernetes.io/healthcheck-path: /health
 spec:
+  ingressClassName: nginx
   rules:
     - http:
         paths:
