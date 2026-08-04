@@ -34,6 +34,15 @@ jobs:
         with:
           terraform_version: 1.9.0
 
+      - name: Set environment
+        id: env
+        run: |
+          if [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            echo "env_name=prod" >> $GITHUB_OUTPUT
+          else
+            echo "env_name=dev" >> $GITHUB_OUTPUT
+          fi
+
       - name: Terraform Init
         run: terraform init
 
@@ -41,7 +50,7 @@ jobs:
         run: terraform validate
 
       - name: Terraform Plan
-        run: terraform plan -out=tfplan
+        run: terraform plan -var-file=environments/${{ steps.env.outputs.env_name }}.tfvars -out=tfplan
 
       - name: Upload Plan
         uses: actions/upload-artifact@v4
