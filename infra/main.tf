@@ -15,7 +15,7 @@ data "terraform_remote_state" "platform" {
 # RDS PostgreSQL
 ################################################################################
 module "rds" {
-  source = "../../toggle-master-infra/modules/rds"
+  source = "git::https://github.com/alissonmota-am/toggle-master-infra.git//modules/rds?ref=develop"
 
   project_name               = var.project_name
   vpc_id                     = data.terraform_remote_state.platform.outputs.vpc_id

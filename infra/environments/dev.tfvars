@@ -3,7 +3,7 @@ project_name = "auth-service-dev"
 
 # Remote State da plataforma
 platform_state_bucket = "BUCKET_NAME_AQUI"
-platform_state_key    = "platform-dev/terraform.tfstate"
+platform_state_key    = "platform/dev/terraform.tfstate"
 
 # RDS
 db_instance_class = "db.t3.micro"
