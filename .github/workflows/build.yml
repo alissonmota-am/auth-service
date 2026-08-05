@@ -1,0 +1,36 @@
+name: Build & Push - Auth Service
+
+on:
+  push:
+    branches: [main, develop]
+    paths-ignore:
+      - 'infra/**'
+      - '.github/workflows/terraform-*.yml'
+      - 'k8s/**'
+  workflow_dispatch:
+
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+  AWS_REGION: us-east-1
+  ECR_REGISTRY: 103568492404.dkr.ecr.us-east-1.amazonaws.com
+  IMAGE_NAME: toggle-master-dev/auth-service
+
+jobs:
+  build-and-push:
+    name: Build & Push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Login to ECR
+        run: aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY
+
+      - name: Build image
+        run: docker build -t $ECR_REGISTRY/$IMAGE_NAME:${{ github.sha }} -t $ECR_REGISTRY/$IMAGE_NAME:latest .
+
+      - name: Push image
+        run: docker push $ECR_REGISTRY/$IMAGE_NAME --all-tags
