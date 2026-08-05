@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: auth-service
-          image: 634115191566.dkr.ecr.us-east-1.amazonaws.com/toggle-master/auth-service:latest
+          image: 103568492404.dkr.ecr.us-east-1.amazonaws.com/toggle-master-dev/auth-service:latest
           ports:
             - containerPort: 8001
           resources:
