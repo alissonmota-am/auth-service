@@ -26,3 +26,15 @@ module "rds" {
   username                   = var.db_username
   password                   = var.db_password
 }
+
+################################################################################
+# Secrets Manager — Master Key
+################################################################################
+resource "aws_secretsmanager_secret" "master_key" {
+  name = "${var.project_name}/master-key"
+}
+
+resource "aws_secretsmanager_secret_version" "master_key" {
+  secret_id     = aws_secretsmanager_secret.master_key.id
+  secret_string = var.master_key
+}

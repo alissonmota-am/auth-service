@@ -40,3 +40,9 @@ variable "db_password" {
   type        = string
   sensitive   = true
 }
+
+variable "master_key" {
+  description = "Chave master para administracao de API keys"
+  type        = string
+  sensitive   = true
+}
