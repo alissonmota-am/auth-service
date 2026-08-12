@@ -31,7 +31,8 @@ module "rds" {
 # Secrets Manager — Master Key
 ################################################################################
 resource "aws_secretsmanager_secret" "master_key" {
-  name = "${var.project_name}/master-key"
+  name                    = "${var.project_name}/master-key"
+  recovery_window_in_days = 0
 }
 
 resource "aws_secretsmanager_secret_version" "master_key" {
