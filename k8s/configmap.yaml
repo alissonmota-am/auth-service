@@ -5,3 +5,7 @@ metadata:
   namespace: auth-service
 data:
   PORT: "8001"
+  # OpenTelemetry
+  OTEL_SERVICE_NAME: "auth-service"
+  OTEL_EXPORTER_OTLP_ENDPOINT: "otel-collector.observability.svc.cluster.local:4317"
+  DEPLOYMENT_ENVIRONMENT: "dev"

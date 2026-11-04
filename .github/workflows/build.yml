@@ -14,7 +14,7 @@ env:
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
   AWS_REGION: us-east-1
-  ECR_REGISTRY: 103568492404.dkr.ecr.us-east-1.amazonaws.com
+  ECR_REGISTRY: 533267294133.dkr.ecr.us-east-1.amazonaws.com
   IMAGE_NAME: toggle-master-dev/auth-service
 
 permissions:
