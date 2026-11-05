@@ -9,3 +9,6 @@ data:
   OTEL_SERVICE_NAME: "auth-service"
   OTEL_EXPORTER_OTLP_ENDPOINT: "otel-collector.observability.svc.cluster.local:4317"
   DEPLOYMENT_ENVIRONMENT: "dev"
+  # Habilita /admin/chaos (injecao de falha para a demo de self-healing).
+  # Somente no ambiente de dev.
+  CHAOS_ENABLED: "true"

@@ -29,6 +29,14 @@ func (a *App) healthHandler(w http.ResponseWriter, r *http.Request) {
 
 // validateKeyHandler verifica se uma chave de API (enviada via Header) é válida
 func (a *App) validateKeyHandler(w http.ResponseWriter, r *http.Request) {
+	// Falha injetada (demo de self-healing): responde 500 sem consultar o banco.
+	// O /health continua 200, entao o pod segue "saudavel" para o Kubernetes.
+	if a.failing.Load() {
+		log.Println("[CHAOS] Respondendo 500 em /validate (falha injetada)")
+		http.Error(w, "Erro interno (falha injetada)", http.StatusInternalServerError)
+		return
+	}
+
 	// Extrai a chave do header "Authorization: Bearer <key>"
 	authHeader := r.Header.Get("Authorization")
 	keyString := strings.TrimPrefix(authHeader, "Bearer ")
@@ -102,6 +110,28 @@ func (a *App) createKeyHandler(w http.ResponseWriter, r *http.Request) {
 		Key:     newKey, // Retorna a chave em texto plano pela última vez
 		Message: "Guarde esta chave com segurança! Você não poderá vê-la novamente.",
 	})
+}
+
+// chaosHandler liga/desliga a falha injetada no /validate (demo de self-healing).
+//   POST   -> liga a falha
+//   DELETE -> desliga manualmente (saida de emergencia)
+//   GET    -> consulta o estado
+func (a *App) chaosHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodPost:
+		a.failing.Store(true)
+		log.Println("[CHAOS] Falha injetada: /validate passa a responder 500")
+	case http.MethodDelete:
+		a.failing.Store(false)
+		log.Println("[CHAOS] Falha removida manualmente")
+	case http.MethodGet:
+		// apenas consulta
+	default:
+		http.Error(w, "Método não permitido", http.StatusMethodNotAllowed)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]bool{"failing": a.failing.Load()})
 }
 
 // --- Middleware ---

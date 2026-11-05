@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"sync/atomic"
 
 	_ "github.com/jackc/pgx/v4/stdlib"
 	"github.com/joho/godotenv"
@@ -15,8 +16,14 @@ import (
 
 // App struct (para injeção de dependência)
 type App struct {
-	DB         *sql.DB
-	MasterKey  string
+	DB        *sql.DB
+	MasterKey string
+
+	// Injecao de falha (demo de self-healing). O estado vive so na memoria do
+	// processo: um pod novo sempre nasce com failing = false, por isso um
+	// "kubectl rollout restart" resolve a falha.
+	chaosEnabled bool
+	failing      atomic.Bool
 }
 
 func main() {
@@ -52,8 +59,9 @@ func main() {
 	defer db.Close()
 
 	app := &App{
-		DB:         db,
-		MasterKey:  masterKey,
+		DB:           db,
+		MasterKey:    masterKey,
+		chaosEnabled: os.Getenv("CHAOS_ENABLED") == "true",
 	}
 
 	// --- Rotas da API ---
@@ -66,6 +74,13 @@ func main() {
 	// Endpoints de "admin" para criar/gerenciar chaves
 	// Eles são protegidos pelo middleware de autenticação
 	mux.Handle("/admin/keys", app.masterKeyAuthMiddleware(http.HandlerFunc(app.createKeyHandler)))
+
+	// Injecao de falha para a demo de self-healing. A rota so existe com
+	// CHAOS_ENABLED=true e exige a MASTER_KEY.
+	if app.chaosEnabled {
+		mux.Handle("/admin/chaos", app.masterKeyAuthMiddleware(http.HandlerFunc(app.chaosHandler)))
+		log.Println("[CHAOS] Injecao de falha HABILITADA em /admin/chaos")
+	}
 
 	// Envolve o mux com otelhttp — cria um span automatico para cada requisicao HTTP
 	handler := otelhttp.NewHandler(mux, "auth-service")
