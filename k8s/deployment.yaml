@@ -6,7 +6,6 @@ metadata:
   labels:
     app: auth-service
 spec:
-  replicas: 1
   selector:
     matchLabels:
       app: auth-service
